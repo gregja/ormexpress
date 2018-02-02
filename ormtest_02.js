@@ -1,7 +1,7 @@
 
 // chargement du package personnalisé pour la connexion à MariaDB 
-//const DBMODULE = require('./library/DBConnex');
-const DBMODULE = require('./draft/DBConnex_1');
+const DBMODULE = require('./library/DBConnex');
+//const DBMODULE = require('./draft/DBConnex_1');
 
 // *** TEST DE LECTURE ***
 

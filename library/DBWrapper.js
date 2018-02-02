@@ -5,7 +5,7 @@
 module.exports = {
     selectOne: function (conn, sql, params=[]) {
         return new Promise((resolve, reject) => {
-            conn.execute(sql, params, function (err, rows, result) {
+            conn.execute(sql, params, (err, rows, result) => {
                 if (err) {
                     reject({
                         'status': 'KO',
@@ -32,7 +32,7 @@ module.exports = {
     
     selectBlock: function(conn, sql, params=[]) {
         return new Promise((resolve, reject) => {
-            conn.execute(sql, params, function (err, rows, result) {
+            conn.execute(sql, params, (err, rows, result) => {
                 if (err) {
                     reject({
                         'status': 'ERROR',
@@ -51,9 +51,9 @@ module.exports = {
 
     execute: function(conn, sql, params=[]) {
         return new Promise((resolve, reject) => {
-            console.log(sql);
-            console.log(params);
-            conn.execute(sql, params, function (err, result) {
+//            console.log(sql);
+//            console.log(params);
+            conn.execute(sql, params, (err, result) => {
                 if (err) {
                     reject({
                         'status': 'ERROR',

@@ -1,17 +1,15 @@
 
 // chargement du package personnalisé pour la connexion à MariaDB 
-//const DBMODULE = require('./library/DBConnex');
-const DBMODULE = require('./draft/DBConnex_1');
+const DBMODULE = require('./library/DBConnex');
+//const DBMODULE = require('./draft/DBConnex_1');
 
 // initialisation du connecteur à MariaDB
 const conn = DBMODULE.init();
 
 function loadData (cnx, sql, params) {
     return new Promise((resolve, reject) => {
-        cnx.execute(sql, params, function (err, rows, result) {
+        cnx.execute(sql, params, (err, rows, result) => {
             if (err) {
-                console.log("ERREUR SQL : " + err.code + 
-                        " (" + err.message + ")");
                 reject(err);
             } else {    
                 resolve(rows);
