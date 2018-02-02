@@ -51,6 +51,8 @@ module.exports = {
 
     execute: function(conn, sql, params=[]) {
         return new Promise((resolve, reject) => {
+            console.log(sql);
+            console.log(params);
             conn.execute(sql, params, function (err, result) {
                 if (err) {
                     reject({

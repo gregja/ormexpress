@@ -1,7 +1,8 @@
 // *** TEST DE SUPPRESSION ***
 
 // chargement du package personnalisé pour la connexion à MariaDB 
-const DBMODULE = require('./library/DBConnex');
+//const DBMODULE = require('./library/DBConnex');
+const DBMODULE = require('./draft/DBConnex_1');
 
 // initialisation du connecteur à MariaDB
 const conn = DBMODULE.init();
@@ -12,10 +13,10 @@ const BDSERIES = require('./library/BDSeries');
 
 var serie3 = new BDSERIES(conn);
 serie3.loadRec(22);
-setTimeout(()=>{  
+setTimeout((seriex)=>{  
     console.log('suppression id 22');
-    serie3.deleteRec();
-}, 1000, 'foo');
+    seriex.deleteRec();
+}, 1000, serie3);
 
 
 var serie4 = new BDSERIES(conn);

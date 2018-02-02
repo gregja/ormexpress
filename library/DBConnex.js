@@ -18,14 +18,12 @@ module.exports = {
             charset: "UTF8_GENERAL_CI"
         });
  
-        conn.connect(function (err) {
+        conn.connect((err) => {
             if (err) {
-                console.error('ERREUR SUR CONNEXION: ' + err.stack);
+                console.error('ERREUR/CONNEXION DB: ' + err.stack);
                 return;
             }
-
             console.log('Connected as id ' + conn.threadId);
-
         });
 
         return conn;
