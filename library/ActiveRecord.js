@@ -63,27 +63,34 @@ module.exports = class ActiveRecord {
      * @param {type} id
      * @returns {undefined}
      */
-    loadRec(id) {
+    loadRec(id, callback=false) {
         this.key_value = id;
         var sql = 'SELECT ' + this.fields_name.join(', ') + ' FROM ' + 
                 this.table_name + ' WHERE ' + this.key_name + ' = ? ';
-        //console.log(sql);
+
+        this.is_rec_loaded = false;
+        this.is_rec_created = false;
+        this.is_rec_deleted = false;
+        this.is_rec_updated = false;
+        this.is_rec_saved = false;    
 
         DBWRAPPER.selectOne(this.db, sql, [id]).then((content) => {
             var data = content.data;
-            this.is_rec_loaded = true;
-            this.is_rec_loaded = true;
-            this.is_rec_created = false;
-            this.is_rec_deleted = false;
-            this.is_rec_updated = false;
-            this.is_rec_saved = false;
-
-            this.fields_name.forEach( (element, index) => {
-                if (data.hasOwnProperty(element) ) {
-                    this.fields_value [element] = data [element];
-                    this.fields_update [element] = data [element];
-                }
-            });   
+            if (Object.getOwnPropertyNames(data).length === 0) {
+                // si objet vide alors la requête n'a pas trouvé de ligne
+                console.log('No data => '+sql);
+            } else {            
+                this.is_rec_loaded = true;
+                this.fields_name.forEach( (element, index) => {
+                    if (data.hasOwnProperty(element) ) {
+                        this.fields_value [element] = data [element];
+                        this.fields_update [element] = data [element];
+                    }
+                });  
+            }
+            if (callback && typeof callback === "function") {
+                callback(this);
+            }
         }, (err) => {
             console.error('Erreur :', err.code, ' ', err.message);
         });
@@ -96,11 +103,11 @@ module.exports = class ActiveRecord {
      * dans le cas contraire, elle est créée par appel de la méthode create()
      * @returns {undefined}
      */
-    saveRec() {
+    saveRec(callback=false) {
         if (this.is_rec_loaded) {
-            this.updateRec();
+            this.updateRec(callback);
         } else {
-            this.createRec();
+            this.createRec(callback);
         }        
     }
 
@@ -112,7 +119,7 @@ module.exports = class ActiveRecord {
      * (on peut le contrôler via la méthode isLoaded() )
      * @returns {undefined}
      */
-    updateRec() {
+    updateRec(callback=false) {
         var markers = [];
         var terms = [];
 
@@ -126,15 +133,24 @@ module.exports = class ActiveRecord {
             }
         }
 
+        this.is_rec_updated = false;
+        this.is_rec_saved = false;
+
         if (terms.length > 0) {
             var sql = `UPDATE ${this.table_name} SET `;
             sql += markers.join(', ');
             sql += ` WHERE ${this.key_name} = ?` ;
             terms.push(this.key_value);
+
             
             DBWRAPPER.execute(this.db, sql, terms).then((content) => {
-                this.is_rec_updated = true;
-                this.is_rec_saved = true;
+                if (content.affectedRows > 0) {
+                    this.is_rec_updated = true;
+                    this.is_rec_saved = true;
+                }
+                if (callback && typeof callback === "function") {
+                    callback(this);
+                }
             }, (err) => {
                 this.is_rec_updated = false;
                 this.is_rec_saved = false;
@@ -149,7 +165,7 @@ module.exports = class ActiveRecord {
      *  is_updated() 
      * @returns {undefined}
      */
-    createRec() {
+    createRec(callback=false) {
         var fields = [];
         var terms = [];
         var markers = [];
@@ -163,14 +179,21 @@ module.exports = class ActiveRecord {
                 markers.push('?');
             }
         }
+        this.is_rec_created = false;
+        this.is_rec_saved = false;
         if (terms.length > 0) {       
             var sql = `INSERT INTO ${this.table_name} ( `;
             sql += fields.join(',') + ') VALUES (';
             sql += markers.join(',') + ')';
             DBWRAPPER.execute(this.db, sql, terms).then((content) => {
-                this.is_rec_created = true;
-                this.is_rec_saved = true;
-                this.key_value = content.insertId;
+                if (content.affectedRows > 0) {
+                    this.is_rec_created = true;
+                    this.is_rec_saved = true;
+                    this.key_value = content.insertId;
+                }
+                if (callback && typeof callback === "function") {
+                    callback(this);
+                }                
             }, (err) => {
                 this.is_rec_created = false;
                 this.is_rec_saved = false;
@@ -189,7 +212,7 @@ module.exports = class ActiveRecord {
      * @param {type} id
      * @returns {undefined}
      */
-    deleteRec(id=null) {
+    deleteRec(id=null, callback=false) {
         if (id === null) {
             if (this.is_rec_loaded) {
                 id = this.key_value ;
@@ -198,15 +221,23 @@ module.exports = class ActiveRecord {
         if (id === null) {
             console.error('Erreur : suppression de ligne impossible');
             return;
+        } else {
+            this.key_value = id;
         }
         var sql = `DELETE FROM ${this.table_name} `;
         sql += ` WHERE ${this.key_name} = ?` ;
         var terms = [];
         terms.push(id);
 
+        this.is_rec_deleted = false;
+
         DBWRAPPER.execute(this.db, sql, terms).then((content) => {
-            this.is_rec_deleted = true;
-            this.is_rec_loaded = false;
+            if (content.affectedRows > 0) {
+                this.is_rec_deleted = true;
+            }
+            if (callback && typeof callback === "function") {
+                callback(this);
+            }            
         }, (err) => {
             console.error('Erreur :', err.code, ' ', err.message);
         });                        

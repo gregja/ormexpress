@@ -13,7 +13,7 @@ module.exports = {
         var conn = MYSQL.createConnection({
             host: "localhost",
             user: "root",
-            password: "XXXXXXXXX", // TODO : change password
+            password: require('../draft/DBPwd').getPwd(),
             database: "test2",
             charset: "UTF8_GENERAL_CI"
         });
