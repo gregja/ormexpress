@@ -65,8 +65,6 @@ module.exports = class ActiveRecord {
      */
     loadRec(id, callback=false) {
         this.key_value = id;
-//        var sql = 'SELECT ' + this.fields_name.join(', ') + ' FROM ' + 
-//                `${this.table_name} WHERE ${this.key_name} = ? `;
         var sql = `SELECT ${this.fields_name.join(', ')} ` + 
                   `FROM ${this.table_name} WHERE ${this.key_name} = ? `;
 
