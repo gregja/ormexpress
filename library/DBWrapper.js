@@ -7,7 +7,6 @@ module.exports = {
         return new Promise((resolve, reject) => {
             conn.execute(sql, params, (err, rows, result) => {
                 if (err) {
-                    console.log('XERRX ', err);
                     reject({
                         'status': 'ERROR',
                         'errcode': err.code,
