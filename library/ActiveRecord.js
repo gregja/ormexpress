@@ -17,7 +17,7 @@ module.exports = class ActiveRecord {
         this.table_name = '';  // ** to override (mandatory) ** 
         this.key_name = 'id'; // ** to override only if necessary **
         this.key_value = null;
-        this.fields_name = [];
+        this.fields_name = [];  // ** to override (mandatory) ** 
         this.fields_value = {};
         this.fields_update = {};
         this.is_rec_loaded = false;
@@ -65,8 +65,10 @@ module.exports = class ActiveRecord {
      */
     loadRec(id, callback=false) {
         this.key_value = id;
-        var sql = 'SELECT ' + this.fields_name.join(', ') + ' FROM ' + 
-                this.table_name + ' WHERE ' + this.key_name + ' = ? ';
+//        var sql = 'SELECT ' + this.fields_name.join(', ') + ' FROM ' + 
+//                `${this.table_name} WHERE ${this.key_name} = ? `;
+        var sql = `SELECT ${this.fields_name.join(', ')} ` + 
+                  `FROM ${this.table_name} WHERE ${this.key_name} = ? `;
 
         this.is_rec_loaded = false;
         this.is_rec_created = false;
