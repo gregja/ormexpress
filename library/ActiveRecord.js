@@ -88,11 +88,15 @@ module.exports = class ActiveRecord {
                     }
                 });  
             }
-            if (callback && typeof callback === "function") {
-                callback(this);
+            if (callback) {
+                if (typeof callback === "function") {
+                    callback(this);
+                } else {
+                    console.log('Warning : callback pas de type function');
+                }
             }
         }, (err) => {
-            console.error('Erreur :', err.code, ' ', err.message);
+            console.error('Erreur :', err.errcode, ' ', err.errmsg);
         });
     }
 
@@ -141,20 +145,21 @@ module.exports = class ActiveRecord {
             sql += markers.join(', ');
             sql += ` WHERE ${this.key_name} = ?` ;
             terms.push(this.key_value);
-
-            
+           
             DBWRAPPER.execute(this.db, sql, terms).then((content) => {
                 if (content.affectedRows > 0) {
                     this.is_rec_updated = true;
                     this.is_rec_saved = true;
                 }
-                if (callback && typeof callback === "function") {
-                    callback(this);
+                if (callback) {
+                    if (typeof callback === "function") {
+                        callback(this);
+                    } else {
+                        console.log('Warning : callback pas de type function');
+                    }
                 }
             }, (err) => {
-                this.is_rec_updated = false;
-                this.is_rec_saved = false;
-                console.error('Erreur :', err.code, ' ', err.message);
+                console.error('Erreur :', err.errcode, ' ', err.errmsg);
             });                        
         }        
     }
@@ -179,8 +184,10 @@ module.exports = class ActiveRecord {
                 markers.push('?');
             }
         }
+        
         this.is_rec_created = false;
         this.is_rec_saved = false;
+        
         if (terms.length > 0) {       
             var sql = `INSERT INTO ${this.table_name} ( `;
             sql += fields.join(',') + ') VALUES (';
@@ -191,13 +198,15 @@ module.exports = class ActiveRecord {
                     this.is_rec_saved = true;
                     this.key_value = content.insertId;
                 }
-                if (callback && typeof callback === "function") {
-                    callback(this);
-                }                
+                if (callback) {
+                    if (typeof callback === "function") {
+                        callback(this);
+                    } else {
+                        console.log('Warning : callback pas de type function');
+                    }
+                }              
             }, (err) => {
-                this.is_rec_created = false;
-                this.is_rec_saved = false;
-                console.error('Erreur :', err.code, ' ', err.message);
+                console.error('Erreur :', err.errcode, ' ', err.errmsg);
             });                        
         }            
     }
@@ -235,11 +244,15 @@ module.exports = class ActiveRecord {
             if (content.affectedRows > 0) {
                 this.is_rec_deleted = true;
             }
-            if (callback && typeof callback === "function") {
-                callback(this);
-            }            
+            if (callback) {
+                if (typeof callback === "function") {
+                    callback(this);
+                } else {
+                    console.log('Warning : callback pas de type function');
+                }
+            }           
         }, (err) => {
-            console.error('Erreur :', err.code, ' ', err.message);
+            console.error('Erreur :', err.errcode, ' ', err.errmsg);
         });                        
     }           
 

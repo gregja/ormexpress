@@ -7,17 +7,24 @@ module.exports = {
         return new Promise((resolve, reject) => {
             conn.execute(sql, params, (err, rows, result) => {
                 if (err) {
+                    console.log('XERRX ', err);
                     reject({
-                        'status': 'KO',
+                        'status': 'ERROR',
                         'errcode': err.code,
-                        'errmsg': err.message
+                        'errmsg': err.sqlMessage
                     });
                 } else {
-                    if (rows[0]) {
+                    var nbrows = rows.length;
+                    if (nbrows > 0) {
                         resolve({
-                            'status': 'ERROR',
+                            'status': 'OK',
                             'data': rows[0]
                         });
+                        // on renvoie la 1ère ligne mais WARNING si SQL a 
+                        //  renvoyé plus d'une ligne
+                        if (nbrows > 1) {
+                            console.log(`WARNING : selectOne avec ${rows} lignes`);
+                        }
                     } else {
                         resolve({
                             'status': 'OK',
@@ -25,8 +32,7 @@ module.exports = {
                         });
                     }
                 }
-            });
-            
+            });          
         });    
     },
     
@@ -37,7 +43,7 @@ module.exports = {
                     reject({
                         'status': 'ERROR',
                         'errcode': err.code,
-                        'errmsg': err.message
+                        'errmsg': err.sqlMessage
                     });
                 } else {
                     resolve({
@@ -51,14 +57,12 @@ module.exports = {
 
     execute: function(conn, sql, params=[]) {
         return new Promise((resolve, reject) => {
-//            console.log(sql);
-//            console.log(params);
             conn.execute(sql, params, (err, result) => {
                 if (err) {
                     reject({
                         'status': 'ERROR',
                         'errcode': err.code,
-                        'errmsg': err.message
+                        'errmsg': err.sqlMessage
                     });
                 } else {
                     resolve({
@@ -73,6 +77,5 @@ module.exports = {
             });
         });
     }
-
 };
 
