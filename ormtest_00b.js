@@ -30,5 +30,5 @@ loadData(conn, my_sql, my_params).then((content) => {
     console.info('requête SQL traitée !');
     console.log(content);
 }, (err) => {
-    console.error('Erreur :', err.code, ' ', err.message);
+    console.error('Erreur :', err);
 });
